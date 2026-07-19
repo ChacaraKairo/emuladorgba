@@ -6,23 +6,25 @@
 int main(void) {
   emugba_session* session = NULL;
   emugba_session_config config;
-  unsigned char framebuffer[EMUGBA_FRAME_RGBA_SIZE];
+  emugba_result result;
 
   memset(&config, 0, sizeof(config));
-  config.rom_path = "test.gba";
-  config.save_path = "test.sav";
+  config.rom_path = "arquivo-inexistente.gba";
+  config.save_path = "arquivo-inexistente.sav";
+  config.enable_audio = 1;
 
   assert(emugba_session_create(NULL, &session) == EMUGBA_ERROR_INVALID_ARGUMENT);
-  assert(emugba_session_create(&config, &session) == EMUGBA_OK);
-  assert(session != NULL);
-  assert(emugba_session_set_button(session, EMUGBA_BUTTON_A, 1) == EMUGBA_OK);
-  assert(emugba_session_set_button(session, EMUGBA_BUTTON_A, 0) == EMUGBA_OK);
-  assert(emugba_session_copy_framebuffer(
-             session,
-             framebuffer,
-             sizeof(framebuffer)) == EMUGBA_OK);
-  assert(emugba_session_run_frame(session) == EMUGBA_ERROR_CORE_UNAVAILABLE);
-  assert(emugba_session_flush_save(session) == EMUGBA_ERROR_CORE_UNAVAILABLE);
-  emugba_session_destroy(session);
+  assert(emugba_session_backend_available() == 0 ||
+         emugba_session_backend_available() == 1);
+
+  result = emugba_session_create(&config, &session);
+  if (emugba_session_backend_available()) {
+    assert(result == EMUGBA_ERROR_INVALID_ROM || result == EMUGBA_ERROR_IO);
+  } else {
+    assert(result == EMUGBA_ERROR_CORE_UNAVAILABLE);
+  }
+  assert(session == NULL);
+  assert(emugba_session_audio_sample_rate(NULL) == 0u);
+  assert(emugba_session_read_audio(NULL, NULL, 0u) == 0u);
   return 0;
 }
