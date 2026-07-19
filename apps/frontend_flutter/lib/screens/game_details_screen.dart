@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/game_entry.dart';
 import '../theme/app_colors.dart';
+import 'integrated_player_screen.dart';
 
 class GameDetailsScreen extends StatelessWidget {
   const GameDetailsScreen({
@@ -14,6 +15,14 @@ class GameDetailsScreen extends StatelessWidget {
   final GameEntry game;
   final Future<void> Function() onPlay;
   final Future<void> Function() onRemove;
+
+  Future<void> _openIntegratedPlayer(BuildContext context) async {
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => IntegratedPlayerScreen(game: game),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,16 +38,27 @@ class GameDetailsScreen extends StatelessWidget {
                 _GameHero(game: game),
                 const SizedBox(height: 24),
                 SizedBox(
-                  height: 60,
+                  height: 62,
                   child: FilledButton.icon(
+                    onPressed: () => _openIntegratedPlayer(context),
+                    icon: const Icon(Icons.sports_esports, size: 30),
+                    label: const Text(
+                      'Jogar dentro do aplicativo',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  height: 54,
+                  child: OutlinedButton.icon(
                     onPressed: onPlay,
-                    icon: const Icon(Icons.play_arrow_rounded, size: 30),
+                    icon: const Icon(Icons.open_in_new),
                     label: Text(
-                      game.lastPlayedAt == null ? 'Jogar agora' : 'Continuar jogando',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                      ),
+                      game.lastPlayedAt == null
+                          ? 'Abrir no mGBA externo'
+                          : 'Continuar no mGBA externo',
+                      style: const TextStyle(fontWeight: FontWeight.w700),
                     ),
                   ),
                 ),
@@ -83,10 +103,7 @@ class _GameHero extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.brandBlue.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(
-              color: AppColors.brandYellow,
-              width: 4,
-            ),
+            border: Border.all(color: AppColors.brandYellow, width: 4),
           ),
           child: const Icon(
             Icons.catching_pokemon,
@@ -191,14 +208,14 @@ class _SaveStatusCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Proteção de progresso',
+                    'Save normal e RTC',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.w800,
                         ),
                   ),
                   const SizedBox(height: 4),
                   const Text(
-                    'Backups e gerenciamento próprio de saves serão conectados na próxima integração nativa.',
+                    'O modo integrado carrega o .sav, usa o relógio real para eventos do jogo e grava o progresso ao fechar.',
                   ),
                 ],
               ),
