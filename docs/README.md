@@ -8,17 +8,20 @@ Este diretório concentra as especificações necessárias para desenvolver, tes
 2. [Requisitos](requirements.md)
 3. [Arquitetura](architecture.md)
 4. [Estrutura do repositório](repository-structure.md)
-5. [Núcleo de emulação](emulation-core.md)
-6. [Biblioteca de ROMs](rom-library.md)
-7. [Formato e ciclo de vida dos saves](save-format.md)
-8. [Sincronização](sync.md)
-9. [Interface e experiência](ui-ux.md)
-10. [Plano de testes](testing.md)
-11. [Segurança e privacidade](security.md)
-12. [Build, CI/CD e releases](build-release.md)
-13. [Roadmap](roadmap.md)
-14. [Contribuição](contributing.md)
-15. [Decisões arquiteturais](adr/README.md)
+5. [Plataformas](platforms.md)
+6. [Contrato da API nativa](api-contract.md)
+7. [Núcleo de emulação](emulation-core.md)
+8. [Biblioteca de ROMs](rom-library.md)
+9. [Armazenamento local](data-storage.md)
+10. [Formato e ciclo de vida dos saves](save-format.md)
+11. [Sincronização](sync.md)
+12. [Interface e experiência](ui-ux.md)
+13. [Plano de testes](testing.md)
+14. [Segurança e privacidade](security.md)
+15. [Build, CI/CD e releases](build-release.md)
+16. [Roadmap](roadmap.md)
+17. [Contribuição](contributing.md)
+18. [Decisões arquiteturais](adr/README.md)
 
 ## Escopo
 
@@ -32,3 +35,7 @@ O produto executa ROMs de Game Boy Advance armazenadas em arquivos `.gba` fornec
 - operações de gravação devem ser atômicas e gerar backups;
 - o frontend não deve depender diretamente da API interna do mGBA;
 - toda funcionalidade crítica precisa de testes automatizados.
+
+## Manutenção
+
+Toda alteração que modifique comportamento público, armazenamento, compatibilidade, dependências, segurança ou fluxo do usuário deve atualizar a documentação correspondente. Decisões difíceis de reverter devem receber um ADR.
