@@ -44,13 +44,14 @@ static emugba_result join_path(
   const size_t left_length = strlen(left);
   const int needs_separator =
       left_length > 0u && left[left_length - 1u] != '/' && left[left_length - 1u] != '\\';
-  const int written = snprintf(
-      output,
-      capacity,
-      needs_separator ? "%s%c%s" : "%s%s",
-      left,
-      EMUGBA_PATH_SEPARATOR,
-      right);
+  int written;
+
+  if (needs_separator) {
+    written = snprintf(output, capacity, "%s%c%s", left, EMUGBA_PATH_SEPARATOR, right);
+  } else {
+    written = snprintf(output, capacity, "%s%s", left, right);
+  }
+
   return written < 0 || (size_t)written >= capacity
       ? EMUGBA_ERROR_INVALID_ARGUMENT
       : EMUGBA_OK;
