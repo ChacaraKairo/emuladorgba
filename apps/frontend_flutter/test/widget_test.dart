@@ -7,7 +7,8 @@ void main() {
     SharedPreferences.setMockInitialValues(<String, Object>{});
 
     await tester.pumpWidget(const EmulatorApp());
-    await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
 
     expect(find.text('Biblioteca'), findsWidgets);
     expect(find.text('Saves'), findsWidgets);
