@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/library_screen.dart';
+import 'screens/app_shell.dart';
 import 'theme/app_theme.dart';
 
 void main() {
@@ -18,7 +18,7 @@ class EmulatorApp extends StatelessWidget {
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       themeMode: ThemeMode.system,
-      home: const LibraryScreen(),
+      home: const AppShell(),
     );
   }
 }
