@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(emuladorgba VERSION 0.2.0 LANGUAGES C)
+project(emuladorgba VERSION 0.3.0 LANGUAGES C)
 
 option(EMULADORGBA_BUILD_TESTS "Build native tests" ON)
 option(EMULADORGBA_BUILD_CLI "Build ROM inspection CLI" ON)
@@ -9,6 +9,7 @@ add_library(emuladorgba_core STATIC
   native/src/core.c
   native/src/rom.c
   native/src/sha256.c
+  native/src/storage.c
 )
 
 add_library(emuladorgba::core ALIAS emuladorgba_core)
@@ -51,4 +52,9 @@ if(EMULADORGBA_BUILD_TESTS)
   target_link_libraries(emuladorgba_rom_test PRIVATE emuladorgba::core)
   emuladorgba_enable_warnings(emuladorgba_rom_test)
   add_test(NAME emuladorgba_rom_test COMMAND emuladorgba_rom_test)
+
+  add_executable(emuladorgba_storage_test tests/storage_test.c)
+  target_link_libraries(emuladorgba_storage_test PRIVATE emuladorgba::core)
+  emuladorgba_enable_warnings(emuladorgba_storage_test)
+  add_test(NAME emuladorgba_storage_test COMMAND emuladorgba_storage_test)
 endif()
