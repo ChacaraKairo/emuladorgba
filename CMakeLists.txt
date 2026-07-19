@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(emuladorgba VERSION 0.3.0 LANGUAGES C)
+project(emuladorgba VERSION 0.3.1 LANGUAGES C)
 
 option(EMULADORGBA_BUILD_TESTS "Build native tests" ON)
 option(EMULADORGBA_BUILD_CLI "Build ROM inspection CLI" ON)
@@ -27,6 +27,7 @@ target_compile_features(emuladorgba_core PUBLIC c_std_11)
 function(emuladorgba_enable_warnings target)
   if(MSVC)
     target_compile_options(${target} PRIVATE /W4 /WX)
+    target_compile_definitions(${target} PRIVATE _CRT_SECURE_NO_WARNINGS)
   else()
     target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror)
   endif()
