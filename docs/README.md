@@ -16,12 +16,13 @@ Este diretório concentra as especificações necessárias para desenvolver, tes
 10. [Formato e ciclo de vida dos saves](save-format.md)
 11. [Sincronização](sync.md)
 12. [Interface e experiência](ui-ux.md)
-13. [Plano de testes](testing.md)
-14. [Segurança e privacidade](security.md)
-15. [Build, CI/CD e releases](build-release.md)
-16. [Roadmap](roadmap.md)
-17. [Contribuição](contributing.md)
-18. [Decisões arquiteturais](adr/README.md)
+13. [Sistema visual](design-system.md)
+14. [Plano de testes](testing.md)
+15. [Segurança e privacidade](security.md)
+16. [Build, CI/CD e releases](build-release.md)
+17. [Roadmap](roadmap.md)
+18. [Contribuição](contributing.md)
+19. [Decisões arquiteturais](adr/README.md)
 
 ## Escopo
 
