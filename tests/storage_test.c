@@ -7,12 +7,13 @@
 
 #if defined(_WIN32)
 #include <direct.h>
+#include <process.h>
+#define EMUGBA_GETPID() _getpid()
 #define EMUGBA_RMDIR(path) _rmdir(path)
-#define EMUGBA_SEPARATOR "\\"
 #else
 #include <unistd.h>
+#define EMUGBA_GETPID() getpid()
 #define EMUGBA_RMDIR(path) rmdir(path)
-#define EMUGBA_SEPARATOR "/"
 #endif
 
 static void read_exact(const char* path, unsigned char* output, size_t size) {
@@ -27,7 +28,6 @@ int main(void) {
   char root[256];
   char export_path[320];
   char import_path[320];
-  char backup_path[1200];
   emugba_rom_info rom_info;
   emugba_game_paths paths;
   const unsigned char first_save[] = {1u, 2u, 3u, 4u};
@@ -35,9 +35,10 @@ int main(void) {
   const unsigned char imported_save[] = {5u, 5u, 5u, 5u, 5u};
   unsigned char buffer[8];
   FILE* file;
-  long now = (long)time(NULL);
+  const long now = (long)time(NULL);
+  const long process_id = (long)EMUGBA_GETPID();
 
-  snprintf(root, sizeof(root), "emugba-storage-test-%ld", now);
+  snprintf(root, sizeof(root), "emugba-storage-test-%ld-%ld", now, process_id);
   snprintf(export_path, sizeof(export_path), "%s-export.sav", root);
   snprintf(import_path, sizeof(import_path), "%s-import.sav", root);
 
@@ -53,12 +54,12 @@ int main(void) {
   assert(strstr(paths.game_directory, rom_info.sha256) != NULL);
   assert(emugba_storage_write_metadata(&paths, "games/test.gba", &rom_info) == EMUGBA_OK);
 
-  assert(emugba_save_write_atomic(&paths, first_save, sizeof(first_save), 10u) == EMUGBA_OK);
+  assert(emugba_save_write_atomic(&paths, first_save, sizeof(first_save), 0u) == EMUGBA_OK);
   memset(buffer, 0, sizeof(buffer));
   read_exact(paths.save_file, buffer, sizeof(first_save));
   assert(memcmp(buffer, first_save, sizeof(first_save)) == 0);
 
-  assert(emugba_save_write_atomic(&paths, second_save, sizeof(second_save), 10u) == EMUGBA_OK);
+  assert(emugba_save_write_atomic(&paths, second_save, sizeof(second_save), 0u) == EMUGBA_OK);
   memset(buffer, 0, sizeof(buffer));
   read_exact(paths.save_file, buffer, sizeof(second_save));
   assert(memcmp(buffer, second_save, sizeof(second_save)) == 0);
@@ -71,21 +72,26 @@ int main(void) {
   file = fopen(import_path, "wb");
   assert(file != NULL);
   assert(fwrite(imported_save, 1u, sizeof(imported_save), file) == sizeof(imported_save));
-  fclose(file);
-  assert(emugba_save_import_file(&paths, import_path, 10u) == EMUGBA_OK);
+  assert(fclose(file) == 0);
+  assert(emugba_save_import_file(&paths, import_path, 0u) == EMUGBA_OK);
   memset(buffer, 0, sizeof(buffer));
   read_exact(paths.save_file, buffer, sizeof(imported_save));
   assert(memcmp(buffer, imported_save, sizeof(imported_save)) == 0);
 
-  remove(export_path);
-  remove(import_path);
-  remove(paths.save_file);
-  remove(paths.metadata_file);
+  assert(remove(export_path) == 0);
+  assert(remove(import_path) == 0);
+  assert(remove(paths.save_file) == 0);
+  assert(remove(paths.metadata_file) == 0);
+  assert(EMUGBA_RMDIR(paths.states_directory) == 0);
+  assert(EMUGBA_RMDIR(paths.backups_directory) == 0);
+  assert(EMUGBA_RMDIR(paths.game_directory) == 0);
 
-  /* Backups use timestamped names; leave no assumptions about their exact names.
-     The test root is intentionally unique and harmless if a backup remains. */
-  snprintf(backup_path, sizeof(backup_path), "%s%s%s", paths.game_directory, EMUGBA_SEPARATOR, "states");
-  EMUGBA_RMDIR(backup_path);
+  {
+    char games_directory[320];
+    snprintf(games_directory, sizeof(games_directory), "%s/games", root);
+    assert(EMUGBA_RMDIR(games_directory) == 0);
+  }
+  assert(EMUGBA_RMDIR(root) == 0);
 
   return 0;
 }
