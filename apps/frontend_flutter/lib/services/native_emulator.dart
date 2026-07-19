@@ -31,17 +31,17 @@ typedef _SetButtonDart = int Function(Pointer<Void>, int, int);
 typedef _CopyFramebufferNative = Int32 Function(
   Pointer<Void>,
   Pointer<Uint8>,
-  Size,
+  UintPtr,
 );
 typedef _CopyFramebufferDart = int Function(
   Pointer<Void>,
   Pointer<Uint8>,
   int,
 );
-typedef _ReadAudioNative = Size Function(
+typedef _ReadAudioNative = UintPtr Function(
   Pointer<Void>,
   Pointer<Int16>,
-  Size,
+  UintPtr,
 );
 typedef _ReadAudioDart = int Function(
   Pointer<Void>,
@@ -79,35 +79,35 @@ enum GbaButton {
 }
 
 class NativeEmulator {
-  NativeEmulator._(this._library)
-      : _backendAvailable = _library.lookupFunction<
+  NativeEmulator._(DynamicLibrary library)
+      : _backendAvailable = library.lookupFunction<
             _BackendAvailableNative,
             _BackendAvailableDart>('emugba_session_backend_available'),
-        _create = _library.lookupFunction<_CreateNative, _CreateDart>(
+        _create = library.lookupFunction<_CreateNative, _CreateDart>(
           'emugba_session_create',
         ),
-        _runFrame = _library.lookupFunction<_RunFrameNative, _RunFrameDart>(
+        _runFrame = library.lookupFunction<_RunFrameNative, _RunFrameDart>(
           'emugba_session_run_frame',
         ),
-        _reset = _library.lookupFunction<_ResetNative, _ResetDart>(
+        _reset = library.lookupFunction<_ResetNative, _ResetDart>(
           'emugba_session_reset',
         ),
-        _setButton = _library.lookupFunction<_SetButtonNative, _SetButtonDart>(
+        _setButton = library.lookupFunction<_SetButtonNative, _SetButtonDart>(
           'emugba_session_set_button',
         ),
-        _copyFramebuffer = _library.lookupFunction<
+        _copyFramebuffer = library.lookupFunction<
             _CopyFramebufferNative,
             _CopyFramebufferDart>('emugba_session_copy_framebuffer'),
-        _readAudio = _library.lookupFunction<_ReadAudioNative, _ReadAudioDart>(
+        _readAudio = library.lookupFunction<_ReadAudioNative, _ReadAudioDart>(
           'emugba_session_read_audio',
         ),
-        _audioRate = _library.lookupFunction<_AudioRateNative, _AudioRateDart>(
+        _audioRate = library.lookupFunction<_AudioRateNative, _AudioRateDart>(
           'emugba_session_audio_sample_rate',
         ),
-        _flushSave = _library.lookupFunction<
+        _flushSave = library.lookupFunction<
             _FlushSaveNative,
             _FlushSaveDart>('emugba_session_flush_save'),
-        _destroy = _library.lookupFunction<_DestroyNative, _DestroyDart>(
+        _destroy = library.lookupFunction<_DestroyNative, _DestroyDart>(
           'emugba_session_destroy',
         );
 
@@ -115,7 +115,6 @@ class NativeEmulator {
   static const frameHeight = 160;
   static const frameBytes = frameWidth * frameHeight * 4;
 
-  final DynamicLibrary _library;
   final _BackendAvailableDart _backendAvailable;
   final _CreateDart _create;
   final _RunFrameDart _runFrame;
