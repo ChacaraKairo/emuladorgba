@@ -1,12 +1,33 @@
 cmake_minimum_required(VERSION 3.20)
 
-project(emuladorgba VERSION 0.4.0 LANGUAGES C)
+project(emuladorgba VERSION 0.5.0 LANGUAGES C)
+
+include(FetchContent)
 
 option(EMULADORGBA_BUILD_TESTS "Build native tests" ON)
 option(EMULADORGBA_BUILD_CLI "Build ROM inspection CLI" ON)
-option(EMULADORGBA_ENABLE_WERROR "Treat warnings as errors" OFF)
+option(EMULADORGBA_ENABLE_WERROR "Treat project warnings as errors" OFF)
+option(EMULADORGBA_WITH_MGBA "Build the embedded mGBA backend" ON)
 
-add_library(emuladorgba_core STATIC
+if(EMULADORGBA_WITH_MGBA)
+  set(LIBMGBA_ONLY ON CACHE BOOL "" FORCE)
+  set(M_CORE_GBA ON CACHE BOOL "" FORCE)
+  set(M_CORE_GB OFF CACHE BOOL "" FORCE)
+  set(BUILD_STATIC ON CACHE BOOL "" FORCE)
+  set(BUILD_SHARED OFF CACHE BOOL "" FORCE)
+  set(BUILD_LTO OFF CACHE BOOL "" FORCE)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+  FetchContent_Declare(
+    mgba
+    GIT_REPOSITORY https://github.com/mgba-emu/mgba.git
+    GIT_TAG 0.10.5
+    GIT_SHALLOW TRUE
+  )
+  FetchContent_MakeAvailable(mgba)
+endif()
+
+add_library(emuladorgba_core SHARED
   native/src/core.c
   native/src/rom.c
   native/src/sha256.c
@@ -15,6 +36,11 @@ add_library(emuladorgba_core STATIC
 )
 
 add_library(emuladorgba::core ALIAS emuladorgba_core)
+
+set_target_properties(emuladorgba_core PROPERTIES
+  OUTPUT_NAME emuladorgba_core
+  POSITION_INDEPENDENT_CODE ON
+)
 
 target_include_directories(emuladorgba_core
   PUBLIC
@@ -25,6 +51,12 @@ target_include_directories(emuladorgba_core
 )
 
 target_compile_features(emuladorgba_core PUBLIC c_std_11)
+target_compile_definitions(emuladorgba_core PRIVATE EMULADORGBA_BUILD_SHARED)
+
+if(EMULADORGBA_WITH_MGBA)
+  target_compile_definitions(emuladorgba_core PRIVATE EMUGBA_WITH_MGBA=1)
+  target_link_libraries(emuladorgba_core PRIVATE mgba)
+endif()
 
 function(emuladorgba_enable_warnings target)
   if(MSVC)
