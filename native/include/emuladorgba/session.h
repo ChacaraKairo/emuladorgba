@@ -13,6 +13,8 @@ extern "C" {
 #define EMUGBA_FRAME_WIDTH 240u
 #define EMUGBA_FRAME_HEIGHT 160u
 #define EMUGBA_FRAME_RGBA_SIZE (EMUGBA_FRAME_WIDTH * EMUGBA_FRAME_HEIGHT * 4u)
+#define EMUGBA_AUDIO_SAMPLE_RATE 32768u
+#define EMUGBA_AUDIO_CHANNELS 2u
 
 typedef struct emugba_session emugba_session;
 
@@ -35,10 +37,13 @@ typedef struct emugba_session_config {
   int enable_audio;
 } emugba_session_config;
 
+EMULADORGBA_API int emugba_session_backend_available(void);
 EMULADORGBA_API emugba_result emugba_session_create(
     const emugba_session_config* config,
     emugba_session** out_session);
 EMULADORGBA_API emugba_result emugba_session_run_frame(
+    emugba_session* session);
+EMULADORGBA_API emugba_result emugba_session_reset(
     emugba_session* session);
 EMULADORGBA_API emugba_result emugba_session_set_button(
     emugba_session* session,
@@ -48,6 +53,12 @@ EMULADORGBA_API emugba_result emugba_session_copy_framebuffer(
     const emugba_session* session,
     uint8_t* output,
     size_t output_size);
+EMULADORGBA_API size_t emugba_session_read_audio(
+    emugba_session* session,
+    int16_t* output_interleaved,
+    size_t maximum_frames);
+EMULADORGBA_API unsigned emugba_session_audio_sample_rate(
+    const emugba_session* session);
 EMULADORGBA_API emugba_result emugba_session_flush_save(
     emugba_session* session);
 EMULADORGBA_API void emugba_session_destroy(emugba_session* session);
