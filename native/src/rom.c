@@ -95,8 +95,9 @@ emugba_result emugba_rom_inspect_file(
 
   bytes_read = fread(header, 1u, sizeof(header), file);
   if (bytes_read != sizeof(header)) {
+    const int read_failed = ferror(file);
     fclose(file);
-    return ferror(file) ? EMUGBA_ERROR_IO : EMUGBA_ERROR_INVALID_ROM;
+    return read_failed ? EMUGBA_ERROR_IO : EMUGBA_ERROR_INVALID_ROM;
   }
 
   emugba_sha256_init(&hash_context);
