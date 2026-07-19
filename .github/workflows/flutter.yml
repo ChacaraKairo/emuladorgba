@@ -31,7 +31,23 @@ jobs:
         run: flutter pub get
 
       - name: Analyze
-        run: flutter analyze
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter analyze 2>&1 | tee flutter-analyze.log
 
       - name: Test
-        run: flutter test
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter test 2>&1 | tee flutter-test.log
+
+      - name: Upload Flutter logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-ci-logs
+          path: |
+            apps/frontend_flutter/flutter-analyze.log
+            apps/frontend_flutter/flutter-test.log
+          if-no-files-found: ignore
