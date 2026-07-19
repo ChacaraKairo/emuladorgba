@@ -23,7 +23,13 @@ typedef enum emugba_result {
   EMUGBA_ERROR_INVALID_ARGUMENT = 1,
   EMUGBA_ERROR_NOT_INITIALIZED = 2,
   EMUGBA_ERROR_ALREADY_INITIALIZED = 3,
-  EMUGBA_ERROR_NOT_IMPLEMENTED = 4
+  EMUGBA_ERROR_NOT_IMPLEMENTED = 4,
+  EMUGBA_ERROR_IO = 5,
+  EMUGBA_ERROR_FILE_NOT_FOUND = 6,
+  EMUGBA_ERROR_UNSUPPORTED_FILE = 7,
+  EMUGBA_ERROR_INVALID_ROM = 8,
+  EMUGBA_ERROR_OUT_OF_MEMORY = 9,
+  EMUGBA_ERROR_CORE_UNAVAILABLE = 10
 } emugba_result;
 
 typedef struct emugba_version {
@@ -40,6 +46,9 @@ EMULADORGBA_API emugba_result emugba_initialize(void);
 
 /** Releases process-level resources. */
 EMULADORGBA_API void emugba_shutdown(void);
+
+/** Returns non-zero after successful initialization. */
+EMULADORGBA_API int emugba_is_initialized(void);
 
 /** Returns a stable human-readable description for a result code. */
 EMULADORGBA_API const char* emugba_result_message(emugba_result result);
