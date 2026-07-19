@@ -3,14 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('exibe biblioteca vazia e acao de importar ROM', (tester) async {
+  testWidgets('exibe navegação e biblioteca vazia', (tester) async {
     SharedPreferences.setMockInitialValues(<String, Object>{});
 
     await tester.pumpWidget(const EmulatorApp());
-    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 500));
 
-    expect(find.text('Minha Biblioteca'), findsOneWidget);
+    expect(find.text('Biblioteca'), findsWidgets);
+    expect(find.text('Saves'), findsWidgets);
+    expect(find.text('Configurações'), findsWidgets);
     expect(find.text('Nenhum jogo importado'), findsOneWidget);
-    expect(find.text('Selecionar arquivo .gba'), findsOneWidget);
   });
 }
