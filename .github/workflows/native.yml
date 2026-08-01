@@ -1,0 +1,62 @@
+name: Native CI
+
+on:
+  push:
+    branches:
+      - main
+      - agent/**
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            with_mgba: ON
+          - os: windows-latest
+            with_mgba: OFF
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure
+        shell: bash
+        run: |
+          set -o pipefail
+          cmake -S . -B build \
+            -DEMULADORGBA_BUILD_TESTS=ON \
+            -DEMULADORGBA_BUILD_CLI=ON \
+            -DEMULADORGBA_WITH_MGBA=${{ matrix.with_mgba }} \
+            2>&1 | tee native-configure.log
+
+      - name: Build
+        shell: bash
+        run: |
+          set -o pipefail
+          cmake --build build --config Release 2>&1 | tee native-build.log
+
+      - name: Test
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build -C Release --output-on-failure \
+            2>&1 | tee native-test.log
+
+      - name: Upload Native logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-ci-logs-${{ matrix.os }}-${{ matrix.with_mgba }}
+          path: |
+            native-configure.log
+            native-build.log
+            native-test.log
+          if-no-files-found: ignore

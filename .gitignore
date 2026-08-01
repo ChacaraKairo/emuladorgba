@@ -1,0 +1,39 @@
+# Build outputs
+build/
+out/
+cmake-build-*/
+
+# Native artifacts
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.dylib
+*.exe
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Local game data — never commit ROMs, BIOS or saves
+runtime/
+roms/
+games/
+bios/
+saves/
+states/
+*.gba
+*.gb
+*.gbc
+*.sav
+*.srm
+*.state
+*.sgm
+
+# Environment
+.env
+.env.*
+!.env.example
